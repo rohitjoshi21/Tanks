@@ -18,13 +18,12 @@ yellow = (200,200,0)
 light_yellow = (255,255,0)
 green = (34,177,76)
 light_green = (0,255,0)
+wheelColor = (100,100,100)
 
 #Sounds
 boom_sound = pg.mixer.Sound("Sounds/boom.wav")
 gameover_sound = pg.mixer.Sound("Sounds/gameover.wav")
 shot_sound = pg.mixer.Sound("Sounds/firecracker.wav")
-
-
 
 boom_image = pg.image.load("Photos/bang1.png")
 
@@ -41,13 +40,17 @@ screen = pg.display.set_mode((dWidth,dHeight))
 pg.display.set_caption('Tanks')
 
 #Game_data
-gHeight = 35
+groundHeight = 35
+gHeight = groundHeight
 tankWidth = 40
 tankHeight = 20
 turretWidth = 3
-turretLength = 30
-wheelWidth = 5
-barW = 50
+turretLength = 20
+wheelWidth = 4
+barrierWidth = 50
+maxPower = 100
+gravity = 6
+bombRadius = 4
 
 #FONT_SIZES
 smallFont = 25
@@ -67,7 +70,7 @@ class Tank:
             self.tankX = dWidth * 0.1
         else:
             self.tankX = dWidth * 0.9
-        self.tankY = dHeight * 0.9
+        self.tankY = dHeight - (groundHeight+tankHeight+wheelWidth)
         self.health = 100
         self.moveX = 0
         self.chgAng = 0
@@ -87,8 +90,8 @@ class Tank:
             
         self.health -= self.damage
         self.damage = 0
-        if self.pow > 100:
-            self.pow = 100
+        if self.pow > maxPower:
+            self.pow = maxPower
         elif self.pow <= 0:
             self.pow = 1
             
@@ -97,17 +100,19 @@ class Tank:
         x = int(self.tankX)
         y= int(self.tankY)
         pg.draw.circle(screen, black,(x,y), int(tankHeight/2))
-        pg.draw.rect(screen, black, (x-tankHeight,y,tankWidth, tankHeight))
+        pg.draw.rect(screen, black, (x-tankWidth/2,y,tankWidth, tankHeight))
         pg.draw.line(screen, black, (x,y),self.turEnd,turretWidth)
-        startX = 15
-        for i in range(7):
-            pg.draw.circle(screen,black,(x-startX,y+20),wheelWidth)
-            startX -= 5
+        
+        numberOfWheel = tankWidth/wheelWidth
+        startX = int(tankWidth/2) - int((numberOfWheel - int(numberOfWheel))/2) - int(wheelWidth/2)
+        for i in range(int(numberOfWheel)):
+            pg.draw.circle(screen,wheelColor,(x-startX,y+tankHeight+int(wheelWidth/2)),int(wheelWidth/2))
+            startX -= wheelWidth
 
     def healthBar(self):
-        if self.health > 75:
+        if self.health > maxPower*0.75:
             color1 = green
-        elif self.health > 30:
+        elif self.health > maxPower*0.3:
             color1 = yellow
         else:
             color1 = red
@@ -122,18 +127,20 @@ class Tank:
         randomizer = random.randint(-10,10)/100
 
         power =  int(power + power * randomizer)
-        if power > 100:
-            return 100
+        if power > maxPower:
+            return maxPower
         elif power < 0:
             return 0
         else:
             return int(power)
         
     def fire(self, enemyX):
+        global gravity,bombRadius
         xy = self.turEnd
         pos = list(self.turEnd)
         fire = True
-        g = 6
+        g = gravity
+        bombR = bombRadius
         x,y = 0,0
         damage = 0
         self.pow = self.calculatePower(self.tankX,self.ang,enemyX,g) if self.auto else self.pow
@@ -143,7 +150,7 @@ class Tank:
                 if event.type == pg.QUIT:
                     close_game()
             screen.fill(bgcolor)
-            pg.draw.circle(screen, red, (int(pos[0]),int(pos[1])),5)
+            pg.draw.circle(screen, red, (int(pos[0]),int(pos[1])),bombR)
             draw_objects(p1,p2)
             x = self.pow * cos(self.ang) * t
             y = x * tan(self.ang) - g/(2*(self.pow*cos(self.ang))**2) * x**2
@@ -160,7 +167,7 @@ class Tank:
                     damage = 25 - abs((hit_x - enemyX)/7)
                     
                 
-            check_x1 = pos[0] <= barX + barW
+            check_x1 = pos[0] <= barX + barrierWidth
             check_x2 = pos[0] >= barX
 
             check_y1 = pos[1] <= dHeight
@@ -211,7 +218,7 @@ def choosePlayer():
         message_to_screen("Choose player mode",green,y_displace = -150,size = large)
 
         button("Single Player",330,400,200,50, green, light_green, "single")
-        button("Multiplayer",330,500,200,50, yellow, light_yellow, "multi")
+        button("Two Player",330,500,200,50, yellow, light_yellow, "multi")
         pg.display.update()
         clock.tick(5)
         
@@ -334,15 +341,17 @@ def draw_objects(x,y,displace_message = None):
     y.show_power()
     x.healthBar()
     y.healthBar()
-    draw_barrier(barX, barH, barW)
+    draw_barrier(barX, barH, barrierWidth)
     screen.fill(green, [0,dHeight-gHeight,dWidth,gHeight])
     if displace_message != None:
         message_to_screen("Your Turn",black,x_displace = displace_message,size = smallFont)
 
 def gameLoop():
-    print('run')
-    game = True
     global barX, barH, p1, p2
+    
+    try: multiplayer
+    except NameError: multiplayer = False
+    
     barX = (dWidth/2) + random.randint(-0.2*dWidth,0.2*dWidth)
     barH = random.randrange(dHeight*0.1, dHeight*0.6)
     p1 = Tank(-1, pi/4)
@@ -351,6 +360,7 @@ def gameLoop():
     else:
         p2 = Tank(1, 3*pi/4)
     turn = 1
+    game = True
     while game:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -414,7 +424,7 @@ def gameLoop():
         if p1.tankX + 20 > barX: p1.tankX -= 5
         if p1.tankX - 20 < 0: p1.tankX += 5
         
-        if p2.tankX - 20 < barX + barW: p2.tankX += 5
+        if p2.tankX - 20 < barX + barrierWidth: p2.tankX += 5
         if p2.tankX + 20 > dWidth: p2.tankX -=5
 
         if turn == 1:
@@ -437,5 +447,5 @@ def gameLoop():
 
 
 gameIntro()
-gameLoop()
+#gameLoop()
         
