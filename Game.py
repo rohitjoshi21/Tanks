@@ -62,9 +62,10 @@ FPS = 15
 clock = pg.time.Clock()
 
 class Tank:
-    def __init__(self,player,angle,power = 50, machine = False):
+    def __init__(self,player,angle,power = 50, machine = False,color = black):
         self.pow = power
         self.ang = angle
+        self.tankcolor = color
         self.p = player
         if player == -1:
             self.tankX = dWidth * 0.1
@@ -96,13 +97,15 @@ class Tank:
             self.pow = 1
             
     def draw_tank(self):
+        #Drawing Tank
         self.turEnd = self.Ends()
         x = int(self.tankX)
         y= int(self.tankY)
-        pg.draw.circle(screen, black,(x,y), int(tankHeight/2))
-        pg.draw.rect(screen, black, (x-tankWidth/2,y,tankWidth, tankHeight))
+        pg.draw.circle(screen, self.tankcolor,(x,y), int(tankHeight/2))
+        pg.draw.rect(screen, self.tankcolor, (x-tankWidth/2,y,tankWidth, tankHeight))
         pg.draw.line(screen, black, (x,y),self.turEnd,turretWidth)
-        
+
+        #Drawing Wheels of Tank
         numberOfWheel = tankWidth/wheelWidth
         startX = int(tankWidth/2) - int((numberOfWheel - int(numberOfWheel))/2) - int(wheelWidth/2)
         for i in range(int(numberOfWheel)):
@@ -123,7 +126,7 @@ class Tank:
             pass
         
     def calculatePower(self,mX,angle,eX,g):
-        power = ( ( (mX-eX)*(-g) )/sin(2*angle) )**(1/2)
+        power = (((mX-eX)*(-g))/sin(2*angle))**(1/2) #Using formula for velocity in projectile motion
         randomizer = random.randint(-10,10)/100
 
         power =  int(power + power * randomizer)
@@ -354,7 +357,7 @@ def gameLoop():
     
     barX = (dWidth/2) + random.randint(-0.2*dWidth,0.2*dWidth)
     barH = random.randrange(dHeight*0.1, dHeight*0.6)
-    p1 = Tank(-1, pi/4)
+    p1 = Tank(-1, pi/4,color = (150,30,40))
     if not multiplayer:
         p2 = Tank(1, 3*pi/4,machine = True)
     else:
