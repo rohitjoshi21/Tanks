@@ -313,7 +313,7 @@ def fire(player):
         clock.tick(100)
     score = 0
     for tank in players:
-        score += setdamage(weapon.rect.center,tank)
+        score += setdamage(weapon.rect.center,tank)*100
         
     for obj in objects[:-1]:
         setdamage(weapon.rect.center,tank)
