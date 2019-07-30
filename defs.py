@@ -1,4 +1,5 @@
 import pygame as pg
+from pygame.locals import *
 pg.init()
 
 #COLORS
@@ -15,25 +16,30 @@ green = (34,177,76)
 light_green = (0,255,0)
 wheelColor = (100,100,100)
 
+#DISPLAY_WINDOW
+dWidth = 800
+dHeight = 600
+##dWidth,dHeight = pg.display.Info().current_w,pg.display.Info().current_h
+##block_size = 20
+##dWidth = round(dWidth/block_size) *block_size
+##dHeight = round(dHeight/block_size)*block_size
+
+
+##screen = pg.display.set_mode((0,0),FULLSCREEN)
+screen = pg.display.set_mode((dWidth,dHeight))
+#pg.display.set_caption('Tanks')
+
 #Sounds
 boom_sound = pg.mixer.Sound("Sounds/boom.wav")
 gameover_sound = pg.mixer.Sound("Sounds/gameover.wav")
 shot_sound = pg.mixer.Sound("Sounds/firecracker.wav")
 
+introbg = pg.image.load("tank.jpg")
+introbg = pg.transform.scale(introbg, (dWidth,dHeight))
 boom_image = pg.image.load("Photos/bang1.png")
 
 ##pg.mixer.music.load("Sounds/ingame.it")
 ##pg.mixer.music.play(-1)
-
-#DISPLAY_WINDOW
-dWidth = 800
-dHeight = 600
-block_size = 20
-dWidth = round(dWidth/block_size) *block_size
-dHeight = round(dHeight/block_size)*block_size
-screen = pg.display.set_mode((dWidth,dHeight))
-#pg.display.set_caption('Tanks')
-
 
 clock = pg.time.Clock()
 

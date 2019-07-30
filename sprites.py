@@ -8,7 +8,7 @@ class Object:
         self.screen = screen
         
 class Tank(Object):
-    def __init__(self,name,posX,human = True,color = black):
+    def __init__(self,name,posX,human = True,color = (0,0,0)):
         Object.__init__(self)
         self.name = name
         self.power = 50
@@ -137,8 +137,8 @@ class Barrier(Object):
         self.screen = screen
         self.color = color
         self.barWidth = barrierWidth
-        self.barX = (dWidth/2) + random.randint(-0.2*dWidth,0.2*dWidth)
-        self.barH = random.randrange(dHeight*0.3, dHeight*0.7)
+        self.barX = (dWidth/2) + random.randint(int(-0.2*dWidth),int(0.2*dWidth))
+        self.barH = random.randrange(int(dHeight*0.3), int(dHeight*0.7))
         self.barHeight = self.barH
         self.damage = 0
         self.health = 200
