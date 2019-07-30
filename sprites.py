@@ -12,6 +12,7 @@ class Tank(Object):
         Object.__init__(self)
         self.name = name
         self.power = 50
+        self.score = 0
         self.ang = pi/4
         self.color = color
         self.midX = posX

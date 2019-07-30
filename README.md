@@ -33,7 +33,7 @@ git clone git@github.com:rohitjoshi21/Tanks.git
 ```
 - when you have cloned the repo, simply run the .py file in terminal 
 ```
-python3 Game.py
+python3 main.py
 ```
 ----------
 

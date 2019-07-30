@@ -11,7 +11,7 @@ players = []
 playersinfo = []
 totalplayers = 3
 objects = []
-wind = random.randint(0,8)
+wind = 0
 clock = pg.time.Clock()
 time = 0
 colors = ['red','blue','green','pink','yellow','gray','orange']
@@ -181,10 +181,10 @@ def gameOver():
         screen.fill(bgcolor)
         message_to_screen("%s wins"%winner,black,size = midFont)
         
-
-        play = button("Play Again",150,500,150,50, green, light_green, "main")
-        intro = button("Home",350,500,100,50, yellow, light_yellow, "intro")
-        close = button("Quit",550,500,100,50, green, light_yellow, "quit")
+        x = int(dWidth/2)
+        play = button("Play Again",x-200,500,150,50, green, light_green, "main")
+        intro = button("Home",x,500,100,50, yellow, light_yellow, "intro")
+        close = button("Quit",x+200,500,100,50, green, light_yellow, "quit")
 
         for response in (play,intro,close):
             if response != None:
@@ -233,23 +233,27 @@ def button(text, x, y, width, height,inactive_color,active_color, action=None):
     text_to_button(text, black, x, y, width, height)
     return None
 
-def draw_objects(player):
+def set_wind():
     global wind,time
     if time > 100:
         wind += random.randint(-2,2)
         time = 0
     else:
         time += 1
-    
+    return wind
+def draw_objects(player):
     for tanker in players:
         tanker.draw_tank()
 
     for obj in objects:
-        obj.draw() 
+        obj.draw()
+        
+    w = set_wind()
     show_power(player.power)
     healthbar(player.gethealth())
     show_name(player.name)
-    message_to_screen('Wind:- '+str(wind),black,x = dWidth/2,y=5,size = smallFont)
+    show_score()
+    message_to_screen('Wind:- '+str(w),black,x = dWidth/2,y=5,size = smallFont)
 
 def healthbar(datas):
     health = datas[0]
@@ -289,12 +293,8 @@ def fire(player):
         weapon.draw(int(pos[0]),int(pos[1]))
         draw_objects(player)
         
-        x = power * cos(player.ang) * t + wind*t/2
-        try:
-            y = power * sin(player.ang) * t - (g*(t**2))/2
-        except ZeroDivisionError:
-            print(player.ang*180/pi,player.power,cos(player.ang),tan(player.ang))
-            fire = False
+        x = power * cos(player.ang) * t + wind*t/2        #Using formula from projectile motion
+        y = power * sin(player.ang) * t - (g*(t**2))/2
             
         t += 0.2
         pos[0] = xy[0] + x
@@ -311,10 +311,14 @@ def fire(player):
             
         pg.display.update()
         clock.tick(100)
-
-    for tank in players+objects[:-1]:
+    score = 0
+    for tank in players:
+        score += setdamage(weapon.rect.center,tank)
+        
+    for obj in objects[:-1]:
         setdamage(weapon.rect.center,tank)
-
+    player.score += score
+    
 def collided(sprite,target):
     collide = False
     if sprite != target:
@@ -330,6 +334,7 @@ def setdamage(center,target):
         damage = 0
 
     target.health -= damage
+    return damage
 
 def validatemotion(player):
     movable = True
@@ -345,6 +350,14 @@ def validatemotion(player):
             
     if not movable:
         player.midX -= player.moveX
+        
+def show_score():
+    x = dWidth-200
+    y = 40
+    for player in players:
+        message_to_screen(player.name+':- '+str(int(player.score)),black,size=30,x=x,y=y)
+        y += 50
+        
 def makeBarrier(color):
     bar = Barrier(color=color)
     bar.draw()
