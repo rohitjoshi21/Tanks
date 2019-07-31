@@ -54,4 +54,10 @@ python3 main.py
 
 ## :octocat: Author
 
-[@rohitjoshi21](https://github.com/rohitjoshi21)
+[Rohit Joshi](https://github.com/rohitjoshi21)
+
+---------
+
+## :octocat: Contributors
+
+[Pradeep Bhattarai](https://github.com/pr0d33p)
