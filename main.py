@@ -488,23 +488,26 @@ def gameLoop():
         
         
 
-
-
-
 ##Main Program
-        
-currScreen = gameIntro
+logf = open("logfile.txt", "w")
+try:      
+    currScreen = gameIntro
 
-screens = {'intro':gameIntro,'controls':game_controls,'chooseplayer':choosePlayer,
-           'main':gameLoop,'quit':close_game,'over':gameOver,'prop':playerproperties}
-gameOn = True
-while gameOn:
-    resp = currScreen()
-    if resp != None:
-        currScreen = screens[resp]
-    else:
-        gameOn = False
+    screens = {'intro':gameIntro,'controls':game_controls,'chooseplayer':choosePlayer,
+               'main':gameLoop,'quit':close_game,'over':gameOver,'prop':playerproperties}
+    gameOn = True
+    while gameOn:
+        resp = currScreen()
+        if resp != None:
+            currScreen = screens[resp]
+        else:
+            gameOn = False
 
-gameLoop()
+except Exception as e:
+    logf.write("Failed to download {0}: {1}\n".format(str(download), str(e)))
+
+
+    
+##gameLoop()
 ##choosePlayer()
 ##playerproperties()

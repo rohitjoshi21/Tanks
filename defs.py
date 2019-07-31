@@ -19,16 +19,15 @@ wheelColor = (100,100,100)
 #DISPLAY_WINDOW
 FULL_SCREEN = True
 
-dWidth = 800
-dHeight = 600
-block_size = 20
-dWidth = round(dWidth/block_size) *block_size
-dHeight = round(dHeight/block_size)*block_size
-screen = pg.display.set_mode((dWidth,dHeight))
+##dWidth = 800
+##dHeight = 600
+##block_size = 20
+##dWidth = round(dWidth/block_size) *block_size
+##dHeight = round(dHeight/block_size)*block_size
+##screen = pg.display.set_mode((dWidth,dHeight))
 
-##dWidth,dHeight = pg.display.Info().current_w,pg.display.Info().current_h
-##screen = pg.display.set_mode((0,0),FULLSCREEN)
-
+screen = pg.display.set_mode((0,0),FULLSCREEN)
+dWidth,dHeight = pg.display.Info().current_w,pg.display.Info().current_h
 
 pg.display.set_caption('Tanks')
 
