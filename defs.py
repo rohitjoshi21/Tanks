@@ -17,16 +17,19 @@ light_green = (0,255,0)
 wheelColor = (100,100,100)
 
 #DISPLAY_WINDOW
+FULL_SCREEN = True
+
 dWidth = 800
 dHeight = 600
-##dWidth,dHeight = pg.display.Info().current_w,pg.display.Info().current_h
-##block_size = 20
-##dWidth = round(dWidth/block_size) *block_size
-##dHeight = round(dHeight/block_size)*block_size
-##
-##
-##screen = pg.display.set_mode((0,0),FULLSCREEN)
+block_size = 20
+dWidth = round(dWidth/block_size) *block_size
+dHeight = round(dHeight/block_size)*block_size
 screen = pg.display.set_mode((dWidth,dHeight))
+
+##dWidth,dHeight = pg.display.Info().current_w,pg.display.Info().current_h
+##screen = pg.display.set_mode((0,0),FULLSCREEN)
+
+
 pg.display.set_caption('Tanks')
 
 #Sounds
@@ -45,7 +48,7 @@ for name,image in zip(images['bg'].keys(),images['bg'].values()):
 images['boom'] = pg.image.load("Photos/bang1.png")
 
 image = pg.image.load('cloud.png')
-images['cloud'] = pg.transform.scale(image,(int(dWidth/6),int(dHeight/5)))
+images['cloud'] = pg.transform.scale(image,(int(dWidth/5),int(dHeight/5)))
                                      
 ##introbg = pg.transform.scale(introbg, (dWidth,dHeight))
 ##boom_image = pg.image.load("Photos/bang1.png")
@@ -56,7 +59,7 @@ images['cloud'] = pg.transform.scale(image,(int(dWidth/6),int(dHeight/5)))
 clock = pg.time.Clock()
 
 #Game_data
-groundHeight = 35
+groundHeight = 60
 gHeight = groundHeight
 tankWidth = 40
 tankHeight = 20
@@ -69,6 +72,8 @@ gravity = 6
 bombRadius = 4
 
 #FONT_SIZES
+small = 25
+mid = 45
 smallFont = 25
 midFont = 45
 large = 75

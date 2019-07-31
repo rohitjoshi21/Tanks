@@ -11,6 +11,7 @@ class Radio:
         defaults = {"id" : None,
                     "command" : None,
                     "active" : True,
+                    "checkbox":False,
                     "outer_radius":10,
                     "inner_radius":7,
                     "main_color" : pg.Color("green"),
@@ -36,13 +37,17 @@ class Radio:
                 self.execute()
                 
     def execute(self):
-        if self.group:
-            for butt in self.group:
-                butt.active = False
-        self.active = True
+        if self.active and self.checkbox:
+            self.active = False
+
+        else:
+            if self.group:
+                for butt in self.group:
+                    butt.active = False
+            self.active = True
         
         if self.command:
-            self.command(self.main_color)
+            self.command(self.main_color,self.active)
 
     def draw(self,surface):
         #print(self.outline_color,self.main_color,self.center,int(self.outer_radius+self.outline_width))

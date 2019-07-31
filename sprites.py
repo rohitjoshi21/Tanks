@@ -200,9 +200,9 @@ class Cloud(Object):
         self.obstacle = False
         
     def move(self):
-        if self.counter > 100:
+        if self.counter > 50:
             self.counter = 0
-            self.speed += random.randint(-5,5)
+            self.speed += random.randint(-2,2)
         else:
             self.counter += 1
             

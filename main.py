@@ -13,7 +13,6 @@ totalplayers = 3
 objects = []
 wind = 0
 clock = pg.time.Clock()
-time = 0
 scores = {}
 colors = ['red','blue','green','pink','yellow','gray','orange']
 
@@ -111,33 +110,39 @@ def playerproperties():
             resp = "main"
         pos += 1
 
-    def setplayercolor(color):
+    def setplayercolor(color,active):
         playersinfo[pos]['color']=color
 
-    
+    def setplayermode(color,active):
+        playersinfo[pos]['human'] = not active
+        
     x = int(dWidth/2-60)
     y = int(dHeight/2-60)
     for color in colors:
         rad = Radio(x,y,color_buttons,main_color=pg.Color(color),command = setplayercolor,active = color=='gray')
         color_buttons.append(rad)
         x += 50
-        
+    modebutt = Radio(int(dWidth/2+200),int(dHeight/2),command = setplayermode,active = False,checkbox = True)
+    
     inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayername)
     while controls == True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 close_game()
             inputbox.get_event(event)
+            modebutt.get_event(event)
             for butt in color_buttons:
                 butt.get_event(event)
         
         screen.fill(bgcolor)
-        message_to_screen("Player:-"+str(pos+1),black,x_displace=-70,y_displace=-140,size=midFont)
+        message_to_screen("Player:-"+str(pos+1),black,x_displace=-70,y_displace=-140,size=mid)
         message_to_screen("Name:- ",black,x_displace=-120,y_displace=-60)
+        message_to_screen("Computer Mode",black,x=dWidth/2+220,y=dHeight/2-30,size = small)
         if resp == 'main':
             return resp
         inputbox.update()
         inputbox.draw(screen)
+        modebutt.draw(screen)
         for butt in color_buttons:
                 butt.draw(screen)
 
@@ -156,6 +161,15 @@ def game_controls():
         check_events()
                
         screen.fill(bgcolor)
+##        msg = \
+##        """
+##                        Controls
+##                        
+##        Move Tank:    Left & Right Arrow / A & D Button
+##        Change Angle: Up $ Down Arrows / W & S Button
+##        Fire/Shoot:   Space / Left Ctrl
+##        """
+##        message_to_screen(msg,green,x = dWidth/2,y = dHeight/2)
         message_to_screen("Controls",green,y_displace = -200,size = large)
         message_to_screen("Player 1             Player 2",black,x = 350, y = 200)
         message_to_screen("Fire:                    Spacebar          Spacebar",black,x = 150, y = 250)
@@ -163,10 +177,11 @@ def game_controls():
         message_to_screen("Move Tank:             A,D         Left & Right arrows",black,x = 150, y = 350)
         message_to_screen("Change Power:        Q,E                Alt & Ctrl",black,x = 150, y = 400)
         
-        
-        play = button("Play",150,500,100,50, green, light_green, "main")
-        intro = button("Back",0,0,100,50, yellow, light_yellow, "intro")
-        close = button("Quit",550,500,100,50, green, light_yellow, "quit")
+        x = dWidth/2
+        y = dHeight - 100
+        play = button("Play",x-200,y,100,50, green, light_green, "chooseplayer")
+        intro = button("Back",x,y,100,50, yellow, light_yellow, "intro")
+        close = button("Quit",x+200,y,100,50, green, light_yellow, "quit")
 
         for response in (play,intro,close):
             if response != None:
@@ -222,7 +237,7 @@ def message_to_screen(msg,color, x_displace = 0,y_displace=0, size = smallFont,x
     if x == None and y == None:
         text_rect.center = (dWidth/2)+x_displace, (dHeight/2)+y_displace
     else:
-        text_rect.topleft = x, y
+        text_rect.center = x, y
     screen.blit(screen_text, text_rect)
 
 def button(text, x, y, width, height,inactive_color,active_color, action=None):
@@ -241,16 +256,6 @@ def button(text, x, y, width, height,inactive_color,active_color, action=None):
         
     text_to_button(text, black, x, y, width, height)
     return None
-
-def set_wind():
-    global wind,time
-    if time > 100:
-        wind += random.randint(-2,2)
-        time = 0
-    else:
-        time += 1
-    return wind
-
 
         
 def draw_objects(player):
@@ -401,7 +406,7 @@ def gameLoop():
     bar2 = makeBarrier(blue)
     objects.append(bar2)
 
-    terrain = Terrain(gray,groundHeight)
+    terrain = Terrain(blue,groundHeight)
     cloud = Cloud()
     
     objects.append(terrain)
@@ -418,21 +423,23 @@ def gameLoop():
         for event in pg.event.get():
             check_quit_event(event)
             if event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
+                b = event.key
+                if b == pg.K_ESCAPE:
                     close_game()
-                elif event.key == pg.K_a :
-                    players[turn].moveX = -5
-                elif event.key == pg.K_d:
-                    players[turn].moveX = 5
-                elif event.key == pg.K_w:
+                    
+                elif b == pg.K_a or b == pg.K_LEFT :
+                    players[turn].moveX = -2
+                elif b == pg.K_d or b == pg.K_RIGHT:
+                    players[turn].moveX = 2
+                elif b == pg.K_w or b == pg.K_UP:
                     players[turn].chgAng = 0.05
-                elif event.key == pg.K_s:
+                elif b == pg.K_s or b == pg.K_DOWN:
                     players[turn].chgAng = -0.05
-                elif event.key == pg.K_e:
+                elif b == pg.K_e or b == pg.K_PAGEUP:
                     players[turn].chgPow = 1
-                elif event.key == pg.K_q:
+                elif b == pg.K_q or b == pg.K_PAGEDOWN:
                     players[turn].chgPow = -1
-                elif event.key == pg.K_SPACE:
+                elif b == pg.K_SPACE or b == pg.K_LCTRL:
                     fire(players[turn])
                     turn = turn + 1 if turn < totalplayers-1 else 0
                 
@@ -442,11 +449,10 @@ def gameLoop():
                     players[turn].chgAng = 0
                 elif event.key in (pg.K_LEFT, pg.K_RIGHT,pg.K_a, pg.K_d):
                     players[turn].moveX = 0
-                elif event.key in (pg.K_q, pg.K_e):
+                elif event.key in (pg.K_q, pg.K_e,pg.K_PAGEUP,pg.K_PAGEDOWN):
                     players[turn].chgPow = 0
             
                     
-        #screen.fill(bgcolor)
         screen.blit(images['bg']['main'],images['bg']['main'].get_rect())
         players[turn].change_values()
             
