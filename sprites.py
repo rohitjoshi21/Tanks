@@ -165,7 +165,7 @@ class Missile(Object):
         self.radius = radius
         self.damage = damage
         self.color = color
-        self.screen = screen
+        #self.screen = screen
         
     def draw(self,X,Y):
         self.rect = pg.draw.circle(self.screen,self.color,(X,Y),self.radius)
@@ -178,7 +178,7 @@ class Missile(Object):
         height = 20
         x,y = self.rect.center
         for i in range(10):
-            boom = pg.transform.scale(boom_image,(width,height))
+            boom = pg.transform.scale(images['boom'],(width,height))
             boom_rect = boom.get_rect()
             boom_rect.center = x, y
             self.screen.blit(boom, boom_rect)
@@ -186,3 +186,37 @@ class Missile(Object):
             clock.tick(50)
             width += 5
             height += 5
+
+class Cloud(Object):
+    def __init__(self):
+        Object.__init__(self)
+        self.image = images['cloud']
+        self.rect = self.image.get_rect()
+        self.rect.left = dWidth
+        self.rect.top = 100
+        self.speed = 0
+        self.counter = 0
+        self.destroyable = False
+        self.obstacle = False
+        
+    def move(self):
+        if self.counter > 100:
+            self.counter = 0
+            self.speed += random.randint(-5,5)
+        else:
+            self.counter += 1
+            
+        self.rect.centerx += self.speed
+
+        if self.rect.right <= 0:
+            self.rect.left = dWidth
+        elif self.rect.left > dWidth:
+            self.rect.right = 0
+            
+        
+    def draw(self):
+        self.move()
+        self.screen.blit(self.image,self.rect)
+        return self.speed
+        
+    

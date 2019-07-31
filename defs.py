@@ -34,9 +34,21 @@ boom_sound = pg.mixer.Sound("Sounds/boom.wav")
 gameover_sound = pg.mixer.Sound("Sounds/gameover.wav")
 shot_sound = pg.mixer.Sound("Sounds/firecracker.wav")
 
-introbg = pg.image.load("tank.jpg")
-introbg = pg.transform.scale(introbg, (dWidth,dHeight))
-boom_image = pg.image.load("Photos/bang1.png")
+images = {}
+images['bg'] = {}
+images['bg']['intro'] = pg.image.load("tank.jpg")
+images['bg']['main'] = pg.image.load("cover.jpeg")
+
+for name,image in zip(images['bg'].keys(),images['bg'].values()):
+    images['bg'][name] = pg.transform.scale(image, (dWidth,dHeight))
+    
+images['boom'] = pg.image.load("Photos/bang1.png")
+
+image = pg.image.load('cloud.png')
+images['cloud'] = pg.transform.scale(image,(int(dWidth/6),int(dHeight/5)))
+                                     
+##introbg = pg.transform.scale(introbg, (dWidth,dHeight))
+##boom_image = pg.image.load("Photos/bang1.png")
 
 ##pg.mixer.music.load("Sounds/ingame.it")
 ##pg.mixer.music.play(-1)
@@ -62,4 +74,4 @@ midFont = 45
 large = 75
 
 #CLOCK
-FPS = 15
+FPS = 50

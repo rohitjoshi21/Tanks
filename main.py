@@ -38,8 +38,8 @@ def gameIntro():
     while intro == True:
         check_events()
             
-        screen.fill(bgcolor)
-        screen.blit(introbg,introbg.get_rect())
+##        screen.fill(bgcolor)
+        screen.blit(images['bg']['intro'],images['bg']['intro'].get_rect())
         message_to_screen("Welcome to Tanks",black,y_displace = -180,size = large)
         message_to_screen("The objective of the game is to shoot destroy",black,y_displace = -100)
         message_to_screen("the enemy tank before they destroy you.",black,y_displace =-60)
@@ -70,7 +70,7 @@ def choosePlayer():
                 totalplayers = int(number)
 
                 for i in range(totalplayers):
-                    data = {'name':'Tank'+str(i+1),'color':pg.Color('gray'),'human':True}
+                    data = {'name':'Tank'+str(i+1),'color':pg.Color('green'),'human':True}
                     playersinfo.append(data)
                 resp = 'prop'
         except:
@@ -250,6 +250,9 @@ def set_wind():
     else:
         time += 1
     return wind
+
+
+        
 def draw_objects(player):
     for tanker in players:
         tanker.draw_tank()
@@ -257,7 +260,7 @@ def draw_objects(player):
     for obj in objects:
         obj.draw()
         
-    w = set_wind()
+    w = cloud.draw()
     show_power(player.power)
     healthbar(player.gethealth())
     show_name(player.name)
@@ -283,6 +286,7 @@ def fire(player):
     pos = list(player.turEnd)
     fire = True
     g = gravity
+    wind = cloud.speed
     bombR = bombRadius
     x,y = 0,0
     damage = 0
@@ -297,7 +301,7 @@ def fire(player):
     t = 0
     while fire:
         check_events()
-        screen.fill(bgcolor)
+        screen.blit(images['bg']['main'],images['bg']['main'].get_rect())
         weapon = Missile(bombR,20,color=blue)
         weapon.draw(int(pos[0]),int(pos[1]))
         draw_objects(player)
@@ -319,7 +323,7 @@ def fire(player):
             fire = False
             
         pg.display.update()
-        clock.tick(100)
+        clock.tick(FPS)
     score = 0
     for tank in players:
         score += setdamage(weapon.rect.center,tank)*100
@@ -380,7 +384,7 @@ def makeBarrier(color):
     return bar
 
 def gameLoop():
-    global totalplayers
+    global totalplayers,cloud
     
     try: multiplayer
     except NameError: multiplayer = False
@@ -398,6 +402,7 @@ def gameLoop():
     objects.append(bar2)
 
     terrain = Terrain(gray,groundHeight)
+    cloud = Cloud()
     
     objects.append(terrain)
     turn = 0
@@ -441,8 +446,8 @@ def gameLoop():
                     players[turn].chgPow = 0
             
                     
-        screen.fill(bgcolor)
-
+        #screen.fill(bgcolor)
+        screen.blit(images['bg']['main'],images['bg']['main'].get_rect())
         players[turn].change_values()
             
         for obj in players+objects[:-1]:
