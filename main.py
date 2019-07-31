@@ -75,7 +75,7 @@ def choosePlayer():
         except:
             pass
         
-    inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,70),command = setplayerinf)
+    inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayerinf)
     
     while intro == True:
         for event in pg.event.get():
@@ -84,7 +84,7 @@ def choosePlayer():
             inputbox.get_event(event)
             
         screen.fill(bgcolor)
-        message_to_screen("Choose no of player",green,y_displace = -150,size = large)
+        message_to_screen("Choose no of player",black,y_displace = -150,size = large)
         
         
         inputbox.update()
@@ -116,13 +116,13 @@ def playerproperties():
     def setplayermode(color,active):
         playersinfo[pos]['human'] = not active
         
-    x = int(dWidth/2-60)
+    x = int(dWidth/2-130)
     y = int(dHeight/2-60)
     for color in colors:
-        rad = Radio(x,y,color_buttons,main_color=pg.Color(color),command = setplayercolor,active = color=='gray')
+        rad = Radio(x,y,color_buttons,main_color=pg.Color(color),command = setplayercolor,active = color=='green')
         color_buttons.append(rad)
         x += 50
-    modebutt = Radio(int(dWidth/2+200),int(dHeight/2),command = setplayermode,active = False,checkbox = True)
+    modebutt = Radio(int(dWidth/2+180),int(dHeight/2),main_color = white,command = setplayermode,active = False,checkbox = True)
     
     inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayername)
     while controls == True:
@@ -135,9 +135,10 @@ def playerproperties():
                 butt.get_event(event)
         
         screen.fill(bgcolor)
-        message_to_screen("Player:-"+str(pos+1),black,x_displace=-70,y_displace=-140,size=mid)
-        message_to_screen("Name:- ",black,x_displace=-120,y_displace=-60)
-        message_to_screen("Computer Mode",black,x=dWidth/2+220,y=dHeight/2-30,size = small)
+        message_to_screen("Player:-"+str(pos+1),black,x_displace=-40,y_displace=-140,size=mid)
+        message_to_screen("Color:- ",black,x=dWidth/2-250,y=dHeight/2-70)
+        message_to_screen("Name:-  ",black,x=dWidth/2-250,y = dHeight/2-15)
+        message_to_screen("Computer Mode",black,x=dWidth/2+200,y=dHeight/2-20,size = small)
         if resp == 'main':
             return resp
         inputbox.update()
