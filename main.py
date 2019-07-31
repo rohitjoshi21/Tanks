@@ -206,7 +206,7 @@ def gameOver():
         message_to_screen("%s wins"%winner,black,size = midFont)
         
         x = int(dWidth/2)
-        play = button("Play Again",x-200,500,150,50, green, light_green, "main")
+        play = button("Play Again",x-200,500,100,50, green, light_green, "main")
         intro = button("Home",     x,    500,100,50, yellow, light_yellow, "intro")
         close = button("Quit",     x+200,500,100,50, green, light_yellow, "quit")
 
