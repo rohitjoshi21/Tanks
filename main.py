@@ -237,7 +237,7 @@ def message_to_screen(msg,color, x_displace = 0,y_displace=0, size = smallFont,x
     if x == None and y == None:
         text_rect.center = (dWidth/2)+x_displace, (dHeight/2)+y_displace
     else:
-        text_rect.center = x, y
+        text_rect.topleft = x, y
     screen.blit(screen_text, text_rect)
 
 def button(text, x, y, width, height,inactive_color,active_color, action=None):
@@ -281,7 +281,7 @@ def healthbar(datas):
 
 def show_name(name):
     message_to_screen('Turn:',black,x = 5,y = 5 ,size = smallFont)
-    message_to_screen(  name ,blue,x = 5,y = 30,size = smallFont)
+    message_to_screen(  name ,black,x = 5,y = 30,size = smallFont)
     
 def show_power(power):
     message_to_screen("Power: "+ str(power)+"%",black,x_displace = -dWidth/4, y_displace = -dHeight/2 +20, size = smallFont)

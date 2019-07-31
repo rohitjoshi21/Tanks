@@ -21,7 +21,8 @@ pip3 install pygame
 
 ## :camera: Screenshot
 
-![Calc](Assets/ss1.png)
+![Intro](Assets/ss1.png)
+![Play](Assets/ss2.png)
 
 ----------
 
