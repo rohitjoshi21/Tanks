@@ -23,11 +23,11 @@ dHeight = 600
 ##block_size = 20
 ##dWidth = round(dWidth/block_size) *block_size
 ##dHeight = round(dHeight/block_size)*block_size
-
-
+##
+##
 ##screen = pg.display.set_mode((0,0),FULLSCREEN)
 screen = pg.display.set_mode((dWidth,dHeight))
-#pg.display.set_caption('Tanks')
+pg.display.set_caption('Tanks')
 
 #Sounds
 boom_sound = pg.mixer.Sound("Sounds/boom.wav")

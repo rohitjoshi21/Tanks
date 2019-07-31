@@ -14,6 +14,7 @@ objects = []
 wind = 0
 clock = pg.time.Clock()
 time = 0
+scores = {}
 colors = ['red','blue','green','pink','yellow','gray','orange']
 
 def check_events():
@@ -23,6 +24,14 @@ def check_events():
             elif event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     close_game()
+
+def check_quit_event(event):
+    if event.type == pg.QUIT:
+        close_game()
+    elif event.type == pg.KEYDOWN:
+        if event.key == pg.K_ESCAPE:
+            close_game()
+                    
                     
 def gameIntro():
     intro = True
@@ -89,7 +98,7 @@ def choosePlayer():
         clock.tick(5)
 
 def playerproperties():
-    global pos,resp
+    global pos,resp,scores
     controls = True
     pos = 0
     resp = ''
@@ -97,7 +106,7 @@ def playerproperties():
     def setplayername(ids,name):
         global pos,resp
         playersinfo[pos]['name'] = name
-        
+        scores[name] = 0
         if pos == totalplayers-1:
             resp = "main"
         pos += 1
@@ -183,8 +192,8 @@ def gameOver():
         
         x = int(dWidth/2)
         play = button("Play Again",x-200,500,150,50, green, light_green, "main")
-        intro = button("Home",x,500,100,50, yellow, light_yellow, "intro")
-        close = button("Quit",x+200,500,100,50, green, light_yellow, "quit")
+        intro = button("Home",     x,    500,100,50, yellow, light_yellow, "intro")
+        close = button("Quit",     x+200,500,100,50, green, light_yellow, "quit")
 
         for response in (play,intro,close):
             if response != None:
@@ -218,7 +227,7 @@ def message_to_screen(msg,color, x_displace = 0,y_displace=0, size = smallFont,x
 
 def button(text, x, y, width, height,inactive_color,active_color, action=None):
     x = x - width/2
-    y = y - width/2
+    y = y - height/2
     cur = pg.mouse.get_pos()
     click = pg.mouse.get_pressed()
     global multiplayer
@@ -352,10 +361,14 @@ def validatemotion(player):
         player.midX -= player.moveX
         
 def show_score():
+    global scores
     x = dWidth-200
     y = 40
     for player in players:
-        message_to_screen(player.name+':- '+str(int(player.score)),black,size=30,x=x,y=y)
+        scores[player.name] = [int(player.score),player.color]
+        
+    for name in scores.keys():
+        message_to_screen(name+':- '+str(scores[name][0]),scores[name][1],size=30,x=x,y=y)
         y += 50
         
 def makeBarrier(color):
@@ -398,8 +411,7 @@ def gameLoop():
             turn = turn + 1 if turn < totalplayers -1 else 0
             
         for event in pg.event.get():
-            if event.type == pg.QUIT :
-                close_game()
+            check_quit_event(event)
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     close_game()
