@@ -31,7 +31,15 @@ pip3 install pygame
 ```
 git clone git@github.com:rohitjoshi21/Tanks.git
 ```
+
+- After cloning the repository, change the directory to Tanks.
+
+```
+cd Tanks
+```
+
 - when you have cloned the repo, simply run the .py file in terminal 
+
 ```
 python3 main.py
 ```
