@@ -165,6 +165,7 @@ class Missile(Object):
         self.radius = radius
         self.damage = damage
         self.color = color
+        self.exploded = False
         #self.screen = screen
         
     def draw(self,X,Y):
@@ -186,7 +187,8 @@ class Missile(Object):
             clock.tick(50)
             width += 5
             height += 5
-
+        self.exploded = True
+        
 class Cloud(Object):
     def __init__(self):
         Object.__init__(self)

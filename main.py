@@ -206,9 +206,9 @@ def gameOver():
         message_to_screen("%s wins"%winner,black,size = midFont)
         
         x = int(dWidth/2)
-        play = button("Play Again",x-200,500,100,50, green, light_green, "main")
-        intro = button("Home",     x,    500,100,50, yellow, light_yellow, "intro")
-        close = button("Quit",     x+200,500,100,50, green, light_yellow, "quit")
+        play = button("Play Again",x-200,500,150,50, green, light_green, "main")
+        intro = button("Home",     x,    500,150,50, yellow, light_yellow, "intro")
+        close = button("Quit",     x+200,500,150,50, green, light_yellow, "quit")
 
         for response in (play,intro,close):
             if response != None:
@@ -329,13 +329,17 @@ def fire(player):
             
         pg.display.update()
         clock.tick(FPS)
-    score = 0
-    for tank in players:
-        score += setdamage(weapon.rect.center,tank)*100
         
-    for obj in objects[:-1]:
-        setdamage(weapon.rect.center,tank)
-    player.score += score
+    score = 0
+
+    if weapon.exploded:
+        for tank in players:
+            score += setdamage(weapon.rect.center,tank)*100
+        player.score += score
+        
+        for obj in objects[:-1]:
+            setdamage(weapon.rect.center,tank)
+    
     
 def collided(sprite,target):
     collide = False
@@ -347,7 +351,7 @@ def collided(sprite,target):
 
 def setdamage(center,target):
     center2 = target.rect.center
-    damage = 55 - ((center[0] - center2[0])**2 + (center[1] - center2[1])**2)**(1/2) * 0.5
+    damage = 55 - ((center[0] - center2[0])**2 + (center[1] - center2[1])**2)**(1/2) * 0.7
     if damage < 0:
         damage = 0
 
