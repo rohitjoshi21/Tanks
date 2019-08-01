@@ -1,6 +1,9 @@
 import pygame as pg
 from pygame.locals import *
+
 pg.init()
+
+FULL_SCREEN = False
 
 #COLORS
 bgcolor = (204, 221, 255)
@@ -15,50 +18,64 @@ light_yellow = (255,255,0)
 green = (34,177,76)
 light_green = (0,255,0)
 wheelColor = (100,100,100)
-
+groundColor = pg.Color(10,10,255,10)
+    
 #DISPLAY_WINDOW
-FULL_SCREEN = True
 
-##dWidth = 800
-##dHeight = 600
-##block_size = 20
-##dWidth = round(dWidth/block_size) *block_size
-##dHeight = round(dHeight/block_size)*block_size
-##screen = pg.display.set_mode((dWidth,dHeight))
+if FULL_SCREEN == True:
+    screen = pg.display.set_mode((0,0),FULLSCREEN)
+    groundHeight = 60
+    dWidth,dHeight = pg.display.Info().current_w,pg.display.Info().current_h
 
-screen = pg.display.set_mode((0,0),FULLSCREEN)
-dWidth,dHeight = pg.display.Info().current_w,pg.display.Info().current_h
+else:
+    dWidth = 800
+    dHeight = 600
+    groundHeight = 50
+    screen = pg.display.set_mode((dWidth,dHeight))
 
-pg.display.set_caption('Tanks')
+
+
+pg.display.set_caption('Battle Tanks')
 
 #Sounds
-boom_sound = pg.mixer.Sound("Sounds/boom.wav")
-gameover_sound = pg.mixer.Sound("Sounds/gameover.wav")
-shot_sound = pg.mixer.Sound("Sounds/firecracker.wav")
+SOUND = True
+try:
+    pg.mixer.init()
+except:
+    SOUND = False
+    print("No sound device found")
 
+if SOUND:
+    boom_sound = pg.mixer.Sound("Sounds/boom.wav")
+    boom_sound.set_volume(0.1)
+    gameover_sound = pg.mixer.Sound("Sounds/gameover.wav")
+    shot_sound = pg.mixer.Sound("Sounds/firecracker.wav")
+    ##pg.mixer.music.load("Sounds/ingame.it")
+    ##pg.mixer.music.play(-1)
+def playSound(sound_name):
+    if SOUND:
+        pg.mixer.Sound.play(sound_name)
+
+#Images        
 images = {}
 images['bg'] = {}
-images['bg']['intro'] = pg.image.load("tank.jpg")
-images['bg']['main'] = pg.image.load("cover.jpeg")
+images['bg']['intro'] = pg.image.load("Photos/tank.jpg")
+images['bg']['main'] = pg.image.load("Photos/cover.jpeg")
 
 for name,image in zip(images['bg'].keys(),images['bg'].values()):
     images['bg'][name] = pg.transform.scale(image, (dWidth,dHeight))
     
 images['boom'] = pg.image.load("Photos/bang1.png")
 
-image = pg.image.load('cloud.png')
+image = pg.image.load('Photos/cloud.png')
 images['cloud'] = pg.transform.scale(image,(int(dWidth/5),int(dHeight/5)))
                                      
-##introbg = pg.transform.scale(introbg, (dWidth,dHeight))
-##boom_image = pg.image.load("Photos/bang1.png")
 
-##pg.mixer.music.load("Sounds/ingame.it")
-##pg.mixer.music.play(-1)
+
 
 clock = pg.time.Clock()
 
 #Game_data
-groundHeight = 60
 gHeight = groundHeight
 tankWidth = 40
 tankHeight = 20
@@ -67,6 +84,8 @@ turretLength = 25
 wheelWidth = 4
 barrierWidth = 50
 maxPower = 100
+maxHealth = 100
+barrierHealth = 200
 gravity = 6
 bombRadius = 4
 

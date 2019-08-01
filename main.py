@@ -16,28 +16,13 @@ clock = pg.time.Clock()
 scores = {}
 colors = ['red','blue','green','pink','yellow','gray','orange']
 
-def check_events():
-    for event in pg.event.get():
-            if event.type == pg.QUIT:
-                close_game()
-            elif event.type == pg.KEYDOWN:
-                if event.key == pg.K_ESCAPE:
-                    close_game()
 
-def check_quit_event(event):
-    if event.type == pg.QUIT:
-        close_game()
-    elif event.type == pg.KEYDOWN:
-        if event.key == pg.K_ESCAPE:
-            close_game()
-                    
-                    
+#Screens--------------------------------------------------------------------------------
 def gameIntro():
     intro = True
     while intro == True:
         check_events()
             
-##        screen.fill(bgcolor)
         screen.blit(images['bg']['intro'],images['bg']['intro'].get_rect())
         message_to_screen("Welcome to Tanks",black,y_displace = -180,size = large)
         message_to_screen("The objective of the game is to shoot destroy",black,y_displace = -100)
@@ -55,107 +40,7 @@ def gameIntro():
             
         pg.display.update()
         clock.tick(5)
-        
-   
-def choosePlayer():
-    global resp
-    intro = True
-    resp = ''
-    
-    def setplayerinf(ids,number):
-        global totalplayers,resp,playersinfo
-        try:
-            if 1 < int(number) < 8:
-                totalplayers = int(number)
 
-                for i in range(totalplayers):
-                    data = {'name':'Tank'+str(i+1),'color':pg.Color('green'),'human':True}
-                    playersinfo.append(data)
-                resp = 'prop'
-        except:
-            pass
-        
-    inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayerinf)
-    
-    while intro == True:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                close_game()
-            inputbox.get_event(event)
-            
-        screen.fill(bgcolor)
-        message_to_screen("Choose no of player",black,y_displace = -150,size = large)
-        
-        
-        inputbox.update()
-        inputbox.draw(screen)
-        
-        if resp == 'prop':
-            return resp
-            
-        pg.display.update()
-        clock.tick(5)
-
-def playerproperties():
-    global pos,resp,scores
-    controls = True
-    pos = 0
-    resp = ''
-    color_buttons = []
-    def setplayername(ids,name):
-        global pos,resp
-        playersinfo[pos]['name'] = name
-        scores[name] = 0
-        if pos == totalplayers-1:
-            resp = "main"
-        pos += 1
-
-    def setplayercolor(color,active):
-        playersinfo[pos]['color']=color
-
-    def setplayermode(color,active):
-        playersinfo[pos]['human'] = not active
-        
-    x = int(dWidth/2-130)
-    y = int(dHeight/2-60)
-    for color in colors:
-        rad = Radio(x,y,color_buttons,main_color=pg.Color(color),command = setplayercolor,active = color=='green')
-        color_buttons.append(rad)
-        x += 50
-    modebutt = Radio(int(dWidth/2+180),int(dHeight/2),main_color = white,command = setplayermode,active = False,checkbox = True)
-    
-    inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayername)
-    while controls == True:
-        for event in pg.event.get():
-            if event.type == pg.QUIT:
-                close_game()
-            inputbox.get_event(event)
-            modebutt.get_event(event)
-            for butt in color_buttons:
-                butt.get_event(event)
-        
-        screen.fill(bgcolor)
-        message_to_screen("Player:-"+str(pos+1),black,x_displace=-40,y_displace=-140,size=mid)
-        message_to_screen("Color:- ",black,x=dWidth/2-250,y=dHeight/2-70)
-        message_to_screen("Name:-  ",black,x=dWidth/2-250,y = dHeight/2-15)
-        message_to_screen("Computer Mode",black,x=dWidth/2+200,y=dHeight/2-20,size = small)
-        if resp == 'main':
-            return resp
-        inputbox.update()
-        inputbox.draw(screen)
-        modebutt.draw(screen)
-        for butt in color_buttons:
-                butt.draw(screen)
-
-
-##        x = dWidth/2
-##        y = dHeight/2
-##        close = button("Quit",x+200,y,100,50, red, light_red, "quit")
-        
-            
-        pg.display.update()
-        clock.tick(5)
-                
 def game_controls():
     controls = True
     while controls == True:
@@ -191,6 +76,215 @@ def game_controls():
         pg.display.update()
         clock.tick(5)
         
+def choosePlayer():
+    global resp
+    intro = True
+    resp = ''
+    
+    def setplayerinf(ids,number):
+        global totalplayers,resp,playersinfo
+        try:
+            if 1 <= int(number) < 8:
+                totalplayers = int(number)
+
+                for i in range(totalplayers):
+                    data = {'name':'Tank'+str(i+1),'color':pg.Color('green'),'human':True}
+                    playersinfo.append(data)
+
+                if totalplayers == 1:
+                    totalplayers = 2
+                    data = {'name':'Computer'+str(i+1),'color':pg.Color('green'),'human':False}
+                    playersinfo.append(data)
+                    
+                resp = 'prop'
+        except:
+            pass
+        
+    inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayerinf)
+    
+    while intro == True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                close_game()
+            inputbox.get_event(event)
+            
+        screen.fill(bgcolor)
+        message_to_screen("Choose no of player",black,y_displace = -150,size = large)
+        
+        
+        inputbox.update()
+        inputbox.draw(screen)
+        
+        if resp == 'prop':
+            return resp
+            
+        pg.display.update()
+        clock.tick(5)
+
+def playerproperties():
+    global pos,resp,scores
+    controls = True
+    pos = 0
+    resp = ''
+    color_buttons = []
+    
+    def setplayername(ids,name):
+        global pos,resp
+        
+        
+            
+        playersinfo[pos]['name'] = name
+        scores[name] = 0
+        if pos+1 < totalplayers:
+            if playersinfo[pos+1]['human'] == False:
+                scores[playersinfo[pos+1]['name']] = 0
+                pos += 1
+            
+        if pos == totalplayers-1:
+            resp = "main"
+        pos += 1
+        
+        
+
+    def setplayercolor(color,active):
+        playersinfo[pos]['color']=color
+
+    def setplayermode(color,active):
+        playersinfo[pos]['human'] = not active
+        
+    x = int(dWidth/2-130)
+    y = int(dHeight/2-60)
+    for color in colors:
+        rad = Radio(x,y,color_buttons,main_color=pg.Color(color),command = setplayercolor,active = color=='green')
+        color_buttons.append(rad)
+        x += 50
+    modebutt = Radio(int(dWidth/2+180),int(dHeight/2),main_color = white,command = setplayermode,active = False,checkbox = True)
+    
+    inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayername)
+    while controls == True:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
+                close_game()
+            inputbox.get_event(event)
+            modebutt.get_event(event)
+            for butt in color_buttons:
+                butt.get_event(event)
+        
+        screen.fill(bgcolor)
+        message_to_screen("Player:-"+str(pos+1),black,x_displace=-40,y_displace=-140,size=mid)
+        message_to_screen("Color:- ",black,x=dWidth/2-250,y=dHeight/2-70)
+        message_to_screen("Name:-  ",black,x=dWidth/2-250,y = dHeight/2-15)
+        message_to_screen("Computer Mode",black,x=dWidth/2+200,y=dHeight/2-20,size = small)
+        
+        if resp == 'main':
+            return resp
+        inputbox.update()
+        inputbox.draw(screen)
+        modebutt.draw(screen)
+        for butt in color_buttons:
+                butt.draw(screen)
+
+
+##        x = dWidth/2
+##        y = dHeight/2
+##        close = button("Quit",x+200,y,100,50, red, light_red, "quit")
+        
+            
+        pg.display.update()
+        clock.tick(5)
+
+def gameLoop():
+    global totalplayers,cloud
+    
+    try: multiplayer
+    except NameError: multiplayer = False
+    
+    x = tankWidth/2
+    interval = (dWidth-tankWidth)/(totalplayers-1)
+    for tanker,tanker in zip(range(totalplayers),playersinfo):
+        player = Tank(tanker['name'],x,color = tanker['color'],human = tanker['human'])
+        players.append(player)
+        x += interval
+        
+    bar1 = makeBarrier(green)
+    objects.append(bar1)
+    bar2 = makeBarrier(blue)
+    objects.append(bar2)
+
+    terrain = Terrain(groundHeight)
+    cloud = Cloud()
+    
+    objects.append(terrain)
+    turn = 0
+    draw_objects(players[turn])
+    game = True
+    while game:
+
+        if players[turn].human == False:
+            time.sleep(1)
+            fire(players[turn])
+            turn = turn + 1 if turn < totalplayers -1 else 0
+            
+        for event in pg.event.get():
+            check_quit_event(event)
+            if event.type == pg.KEYDOWN:
+                b = event.key
+                if b == K_ESCAPE:
+                    close_game()
+                    
+                elif b == K_a or b == K_LEFT :
+                    players[turn].moveX = -2
+                elif b == K_d or b == K_RIGHT:
+                    players[turn].moveX = 2
+                elif b == K_w or b == K_UP:
+                    players[turn].chgAng = 0.05
+                elif b == K_s or b == K_DOWN:
+                    players[turn].chgAng = -0.05
+                elif b == K_e or b == K_PAGEUP:
+                    players[turn].chgPow = 1
+                elif b == K_q or b == K_PAGEDOWN:
+                    players[turn].chgPow = -1
+                elif b == K_SPACE or b == K_LCTRL:
+                    fire(players[turn])
+                    turn = turn + 1 if turn < totalplayers-1 else 0
+                
+                        
+            if event.type == pg.KEYUP:
+                if event.key in (K_UP, K_DOWN,K_w, K_s):
+                    players[turn].chgAng = 0
+                elif event.key in (K_LEFT, K_RIGHT,K_a, K_d):
+                    players[turn].moveX = 0
+                elif event.key in (K_q, K_e,K_PAGEUP,K_PAGEDOWN):
+                    players[turn].chgPow = 0
+            
+                    
+        screen.blit(images['bg']['main'],images['bg']['main'].get_rect())
+        players[turn].change_values()
+            
+        for obj in players+objects[:-1]:
+            if obj.health <= 0:
+                if obj in players:
+                    i = players.index(obj)
+                    players.remove(obj)
+                    totalplayers -= 1
+                else:
+                    objects.remove(obj)
+
+                if i < turn:
+                    turn -= 1
+                elif i >= turn:
+                    if turn+1 > totalplayers:turn=0
+
+                
+        draw_objects(players[turn])
+        
+        pg.display.update()
+        validatemotion(players[turn]) 
+        clock.tick(FPS)
+
+        if len(players) == 1:
+            return 'over'
+        
 def gameOver():
     
     try:
@@ -198,7 +292,7 @@ def gameOver():
     except:
         winner = 'Noone'
         
-    pg.mixer.Sound.play(gameover_sound)
+    playSound(gameover_sound)    
     over = True
     while over == True:
         check_events()
@@ -217,6 +311,26 @@ def gameOver():
             
         pg.display.update()
         clock.tick(5)
+#Screens--------------------------------------------------------------------------------
+
+
+
+
+#Functions------------------------------------------------------------------------------    
+def check_events():
+    for event in pg.event.get():
+            if event.type == QUIT:
+                close_game()
+            elif event.type == KEYDOWN:
+                if event.key == K_ESCAPE:
+                    close_game()
+
+def check_quit_event(event):
+    if event.type == QUIT:
+        close_game()
+    elif event.type == KEYDOWN:
+        if event.key == K_ESCAPE:
+            close_game()
         
 def text_to_button(msg, color, x, y, width, height, size = 25):
     font = pg.font.SysFont('comicsansms', size)
@@ -257,8 +371,7 @@ def button(text, x, y, width, height,inactive_color,active_color, action=None):
         
     text_to_button(text, black, x, y, width, height)
     return None
-
-        
+     
 def draw_objects(player):
     for tanker in players:
         tanker.draw_tank()
@@ -268,7 +381,7 @@ def draw_objects(player):
         
     w = cloud.draw()
     show_power(player.power)
-    healthbar(player.gethealth())
+    healthbar(player.gethealthdata())
     show_name(player.name)
     show_score()
     message_to_screen('Wind:- '+str(w),black,x = dWidth/2,y=5,size = smallFont)
@@ -341,7 +454,6 @@ def fire(player):
         for obj in objects[:-1]:
             setdamage(weapon.rect.center,tank)
     
-    
 def collided(sprite,target):
     collide = False
     if sprite != target:
@@ -393,103 +505,14 @@ def makeBarrier(color):
             bar = makeBarrier(color)
     return bar
 
-def gameLoop():
-    global totalplayers,cloud
-    
-    try: multiplayer
-    except NameError: multiplayer = False
-    
-    x = tankWidth/2
-    interval = (dWidth-tankWidth)/(totalplayers-1)
-    for tanker,tanker in zip(range(totalplayers),playersinfo):
-        player = Tank(tanker['name'],x,color = tanker['color'],human = tanker['human'])
-        players.append(player)
-        x += interval
-        
-    bar1 = makeBarrier(green)
-    objects.append(bar1)
-    bar2 = makeBarrier(blue)
-    objects.append(bar2)
-
-    terrain = Terrain(blue,groundHeight)
-    cloud = Cloud()
-    
-    objects.append(terrain)
-    turn = 0
-    draw_objects(players[turn])
-    game = True
-    while game:
-
-        if players[turn].human == False:
-            time.sleep(1)
-            fire(players[turn])
-            turn = turn + 1 if turn < totalplayers -1 else 0
-            
-        for event in pg.event.get():
-            check_quit_event(event)
-            if event.type == pg.KEYDOWN:
-                b = event.key
-                if b == pg.K_ESCAPE:
-                    close_game()
-                    
-                elif b == pg.K_a or b == pg.K_LEFT :
-                    players[turn].moveX = -2
-                elif b == pg.K_d or b == pg.K_RIGHT:
-                    players[turn].moveX = 2
-                elif b == pg.K_w or b == pg.K_UP:
-                    players[turn].chgAng = 0.05
-                elif b == pg.K_s or b == pg.K_DOWN:
-                    players[turn].chgAng = -0.05
-                elif b == pg.K_e or b == pg.K_PAGEUP:
-                    players[turn].chgPow = 1
-                elif b == pg.K_q or b == pg.K_PAGEDOWN:
-                    players[turn].chgPow = -1
-                elif b == pg.K_SPACE or b == pg.K_LCTRL:
-                    fire(players[turn])
-                    turn = turn + 1 if turn < totalplayers-1 else 0
-                
-                        
-            if event.type == pg.KEYUP:
-                if event.key in (pg.K_UP, pg.K_DOWN,pg.K_w, pg.K_s):
-                    players[turn].chgAng = 0
-                elif event.key in (pg.K_LEFT, pg.K_RIGHT,pg.K_a, pg.K_d):
-                    players[turn].moveX = 0
-                elif event.key in (pg.K_q, pg.K_e,pg.K_PAGEUP,pg.K_PAGEDOWN):
-                    players[turn].chgPow = 0
-            
-                    
-        screen.blit(images['bg']['main'],images['bg']['main'].get_rect())
-        players[turn].change_values()
-            
-        for obj in players+objects[:-1]:
-            if obj.health <= 0:
-                if obj in players:
-                    i = players.index(obj)
-                    players.remove(obj)
-                    totalplayers -= 1
-                else:
-                    objects.remove(obj)
-
-                if i < turn:
-                    turn -= 1
-                elif i >= turn:
-                    if turn+1 > totalplayers:turn=0
-
-                
-        draw_objects(players[turn])
-        
-        pg.display.update()
-        validatemotion(players[turn]) 
-        clock.tick(FPS)
-
-        if len(players) == 1:
-            return 'over'
+#Functions------------------------------------------------------------------------------
 
         
-        
+      
 
-##Main Program
-logf = open("logfile.txt", "w")
+
+##Main Program Flow
+
 try:      
     currScreen = gameIntro
 
@@ -503,11 +526,8 @@ try:
         else:
             gameOn = False
 
-except Exception as e:
-    logf.write("Failed to download {0}: {1}\n".format(str(download), str(e)))
+except NameError as e:
+    logf = open("logfile.txt", "w")
+    logf.write("Failed to run game: {0}\n".format(str(e)))
+    logf.close()
 
-
-    
-##gameLoop()
-##choosePlayer()
-##playerproperties()
