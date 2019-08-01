@@ -4,8 +4,6 @@ from sprites import *
 from math import *
 import random
 import time
-from textbox import *
-from radiobutton import Radio
 
 players = []
 playersinfo = []

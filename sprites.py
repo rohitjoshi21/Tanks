@@ -3,6 +3,138 @@ import random
 from defs import *
 from math import *
 
+class TextBox:
+    def __init__(self,rect,**kwargs):
+        self.rect = pg.Rect(rect)
+        self.buffer = []
+        self.final = None
+        self.rendered = None
+        self.render_rect = None
+        self.render_area = None
+        self.blink = True
+        self.blink_timer = 0.0
+        self.accepted = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+        self.process_kwargs(kwargs)
+
+    def process_kwargs(self,kwargs):
+        defaults = {"id" : None,
+                    "command" : None,
+                    "active" : True,
+                    "color" : pg.Color("white"),
+                    "font_color" : pg.Color("black"),
+                    "outline_color" : pg.Color("black"),
+                    "outline_width" : 2,
+                    "active_color" : pg.Color("blue"),
+                    "font" : pg.font.Font(None, 50),
+                    "clear_on_enter" : True,
+                    "inactive_on_enter" : False}
+        for kwarg in kwargs:
+            if kwarg in defaults:
+                defaults[kwarg] = kwargs[kwarg]
+            else:
+                raise KeyError("InputBox accepts no keyword {}.".format(kwarg))
+        self.__dict__.update(defaults)
+
+    def get_event(self,event):
+        if event.type == pg.KEYDOWN and self.active:
+            if event.key in (pg.K_RETURN,pg.K_KP_ENTER):
+                self.execute()
+            elif event.key == pg.K_BACKSPACE:
+                if self.buffer:
+                    self.buffer.pop()
+            elif event.unicode in self.accepted:
+                self.buffer.append(event.unicode)
+
+    def execute(self):
+        if self.command:
+            self.command(self.id,self.final)
+        self.active = not self.inactive_on_enter
+        if self.clear_on_enter:
+            self.buffer = []
+
+    def update(self):
+        new = "".join(self.buffer)
+        if new != self.final:
+            self.final = new
+            self.rendered = self.font.render(self.final, True, self.font_color)
+            self.render_rect = self.rendered.get_rect(x=self.rect.x+2,
+                                                      centery=self.rect.centery)
+            if self.render_rect.width > self.rect.width-6:
+                offset = self.render_rect.width-(self.rect.width-6)
+                self.render_area = pg.Rect(offset,0,self.rect.width-6,
+                                           self.render_rect.height)
+            else:
+                self.render_area = self.rendered.get_rect(topleft=(0,0))
+        if pg.time.get_ticks()-self.blink_timer > 200:
+            self.blink = not self.blink
+            self.blink_timer = pg.time.get_ticks()
+
+    def draw(self,surface):
+        outline_color = self.active_color if self.active else self.outline_color
+        outline = self.rect.inflate(self.outline_width*2,self.outline_width*2)
+        surface.fill(outline_color,outline)
+        surface.fill(self.color,self.rect)
+        if self.rendered:
+            surface.blit(self.rendered,self.render_rect,self.render_area)
+        if self.blink and self.active:
+            curse = self.render_area.copy()
+            curse.topleft = self.render_rect.topleft
+            surface.fill(self.font_color,(curse.right+1,curse.y,2,curse.h))
+
+class Radio:
+    def __init__(self,x,y,group = None,**kwargs):
+        self.group = group
+        self.center = (x,y)
+        self.process_kwargs(kwargs)
+
+    def process_kwargs(self,kwargs):
+        defaults = {"id" : None,
+                    "command" : None,
+                    "active" : True,
+                    "checkbox":False,
+                    "outer_radius":10,
+                    "inner_radius":7,
+                    "main_color" : pg.Color("green"),
+                    "selected_color":pg.Color("black"),
+                    "outline_color" : pg.Color("black"),
+                    "outline_width" : 2,
+                    "active_color" : pg.Color("blue")}
+        
+        for kwarg in kwargs:
+            if kwarg in defaults:
+                defaults[kwarg] = kwargs[kwarg]
+            else:
+                raise KeyError("InputBox accepts no keyword {}.".format(kwarg))
+
+        self.__dict__.update(defaults)
+        
+    def get_event(self,event):
+        if event.type == pg.MOUSEBUTTONDOWN and event.button == 1:
+            x,y = event.pos
+            h,k = self.center
+            r = self.outer_radius
+            if (x-h)**2 + (y-k)**2 <= r**2:
+                self.execute()
+                
+    def execute(self):
+        if self.active and self.checkbox:
+            self.active = False
+
+        else:
+            if self.group:
+                for butt in self.group:
+                    butt.active = False
+            self.active = True
+        
+        if self.command:
+            self.command(self.main_color,self.active)
+
+    def draw(self,surface):
+        pg.draw.circle(surface,self.outline_color,self.center,int(self.outer_radius+self.outline_width))
+        pg.draw.circle(surface,self.main_color,self.center,self.outer_radius)
+        if self.active:
+            pg.draw.circle(surface,self.selected_color,self.center,self.inner_radius)
+            
 class Object:
     def __init__(self):
         self.screen = screen
