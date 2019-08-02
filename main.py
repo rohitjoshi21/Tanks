@@ -7,7 +7,6 @@ import time
 
 players = []
 playersinfo = []
-totalplayers = 3
 objects = []
 wind = 0
 clock = pg.time.Clock()
@@ -45,18 +44,9 @@ def game_controls():
         check_events()
                
         screen.fill(bgcolor)
-##        msg = \
-##        """
-##                        Controls
-##                        
-##        Move Tank:    Left & Right Arrow / A & D Button
-##        Change Angle: Up $ Down Arrows / W & S Button
-##        Fire/Shoot:   Space / Left Ctrl
-##        """
-##        message_to_screen(msg,green,x = dWidth/2,y = dHeight/2)
+
         message_to_screen("Controls",green,y_displace = -200,size = large)
-        message_to_screen("Player 1             Player 2",black,x = 350, y = 200)
-        message_to_screen("Fire:                    Spacebar          Spacebar",black,x = 150, y = 250)
+        message_to_screen("Fire:                    Spacebar          Left Ctrl",black,x = 150, y = 250)
         message_to_screen("Change Angle:        W,S          Up & Down arrows",black,x = 150, y = 300)
         message_to_screen("Move Tank:             A,D         Left & Right arrows",black,x = 150, y = 350)
         message_to_screen("Change Power:        Q,E                Alt & Ctrl",black,x = 150, y = 400)
@@ -192,8 +182,9 @@ def playerproperties():
         clock.tick(5)
 
 def gameLoop():
-    global totalplayers,cloud
-    
+    global totalplayers,cloud,objects,players
+    players = []
+    objects = []
     try: multiplayer
     except NameError: multiplayer = False
     
@@ -265,13 +256,16 @@ def gameLoop():
                     i = players.index(obj)
                     players.remove(obj)
                     totalplayers -= 1
+
+                    if i < turn:
+                        turn -= 1
+                    elif i >= turn:
+                        if turn+1 > totalplayers:turn=0
+                        
                 else:
                     objects.remove(obj)
 
-                if i < turn:
-                    turn -= 1
-                elif i >= turn:
-                    if turn+1 > totalplayers:turn=0
+                
 
                 
         draw_objects(players[turn])
@@ -289,7 +283,7 @@ def gameOver():
         winner = players[0].name
     except:
         winner = 'Noone'
-        
+ 
     playSound(gameover_sound)    
     over = True
     while over == True:
@@ -299,7 +293,7 @@ def gameOver():
         message_to_screen("%s wins"%winner,black,size = midFont)
         
         x = int(dWidth/2)
-        play = button("Play Again",x-200,500,150,50, green, light_green, "main")
+        play = button("Play Again",x-200,500,150,50, green, light_green, "chooseplayer")
         intro = button("Home",     x,    500,150,50, yellow, light_yellow, "intro")
         close = button("Quit",     x+200,500,150,50, green, light_yellow, "quit")
 
@@ -371,18 +365,19 @@ def button(text, x, y, width, height,inactive_color,active_color, action=None):
     return None
      
 def draw_objects(player):
+    global wind
     for tanker in players:
         tanker.draw_tank()
 
     for obj in objects:
         obj.draw()
         
-    w = cloud.draw()
+    wind = cloud.draw()
     show_power(player.power)
     healthbar(player.gethealthdata())
     show_name(player.name)
     show_score()
-    message_to_screen('Wind:- '+str(w),black,x = dWidth/2,y=5,size = smallFont)
+    message_to_screen('Wind:- '+str(wind*10),black,x = dWidth/2,y=5,size = smallFont)
 
 def healthbar(datas):
     health = datas[0]
@@ -446,11 +441,12 @@ def fire(player):
 
     if weapon.exploded:
         for tank in players:
-            score += setdamage(weapon.rect.center,tank)*100
+            damage = setdamage(weapon.rect.center,tank)*100
+            score = score + damage if tank != player else score - damage
         player.score += score
-        
+
         for obj in objects[:-1]:
-            setdamage(weapon.rect.center,tank)
+            setdamage(weapon.rect.center,obj)
     
 def collided(sprite,target):
     collide = False
@@ -486,13 +482,13 @@ def validatemotion(player):
         
 def show_score():
     global scores
-    x = dWidth-200
+    x = dWidth-250
     y = 40
     for player in players:
         scores[player.name] = [int(player.score),player.color]
         
     for name in scores.keys():
-        message_to_screen(name+':- '+str(scores[name][0]),scores[name][1],size=30,x=x,y=y)
+        message_to_screen(name+':- '+str(scores[name][0]),scores[name][1],size=25,x=x,y=y)
         y += 50
         
 def makeBarrier(color):

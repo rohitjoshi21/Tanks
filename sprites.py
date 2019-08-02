@@ -231,7 +231,7 @@ class Tank(Object):
         if nearest == None:return
         
         eX = nearest.midX
-        R = abs(mX-eX)
+        R = eX - mX
         
 
         randomizer = 0
@@ -240,9 +240,7 @@ class Tank(Object):
 
         R =  int(R + randomizer)
 
-        power = abs(( (R*(g**2))/(g*sin(2*A)+2*w*(cos(A)**2)) )**(1/2))
-        
-        #power = abs((-R*g)/sin(2*A))**(1/2) #Using formula for velocity in projectile motion
+        power = ( (R*g)/(sin(2*A) )) ** (1/2)        
 
         self.power = int(power)  
         if power > maxPower:
@@ -250,13 +248,15 @@ class Tank(Object):
         elif power < maxPower*0.1:
             self.power = int(maxPower*0.1)               
 
+        #print("Range={},Power={},Wind={},Angle={}".format(R,self.power,w,A))
+            
     def calculateAngle(self,players):
         angle = pi/3
         nearest = self.nearestEnemy(players)
         if nearest == None:return
         if nearest.midX < self.midX:
-            angle = 3*pi/2
-
+            angle = 2*pi/3
+    
         self.ang = angle
         
 
@@ -267,6 +267,7 @@ class Tank(Object):
 class Barrier(Object):
     def __init__(self,color = pg.Color("brown")):
         Object.__init__(self)
+        self.name = "Barrier"
         self.screen = screen
         self.color = color
         self.barWidth = barrierWidth
@@ -282,6 +283,7 @@ class Barrier(Object):
 class Terrain(Object):
     def __init__(self,height,strength = 0,color = (102, 153, 153,5)):
         Object.__init__(self)
+        self.name = "Ground"
         self.color = color
         self.height = height
         self.strength = strength
@@ -294,6 +296,7 @@ class Terrain(Object):
 class Missile(Object):
     def __init__(self,radius,strength,color = pg.Color('red')):
         Object.__init__(self)
+        self.name = "Missile"
         self.radius = radius
         self.strength = strength
         self.color = color
@@ -322,6 +325,7 @@ class Cloud(Object):
     
     def __init__(self):
         Object.__init__(self)
+        self.name = "Cloud"
         self.image = images['cloud']
         self.rect = self.image.get_rect()
         self.rect.left = dWidth
@@ -334,12 +338,12 @@ class Cloud(Object):
     def update(self):
         if self.counter > 50:
             self.counter = 0
-            self.speed += random.randint(-2,2)
+            self.speed += random.randint(-1,1)
         else:
             self.counter += 1
 
-        if self.speed > 10:
-            self.speed = 10
+        if self.speed > 5:
+            self.speed = 5
         
         self.rect.centerx += self.speed
 
