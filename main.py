@@ -212,7 +212,7 @@ def gameLoop():
     while game:
 
         if players[turn].human == False:
-            time.sleep(1)
+            #time.sleep(1)
             fire(players[turn])
             turn = turn + 1 if turn < totalplayers -1 else 0
             
@@ -407,7 +407,7 @@ def fire(player):
     
     
     if player.human == False:
-        time.sleep(1)
+        #time.sleep(1)
         player.calculateAngle(players)
         player.calculatePower(players,randomize = False)
         

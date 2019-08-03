@@ -3,7 +3,7 @@ from pygame.locals import *
 
 pg.init()
 
-FULL_SCREEN = False
+FULL_SCREEN = True
 
 #COLORS
 bgcolor = (204, 221, 255)
@@ -97,7 +97,7 @@ midFont = 45
 large = 75
 
 #CLOCK
-FPS = 50
+FPS = 60
 
 def limit(minval,currval,maxval):
     if currval < minval:
