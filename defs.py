@@ -85,7 +85,7 @@ wheelWidth = 4
 barrierWidth = 50
 maxPower = 100
 maxHealth = 100
-barrierHealth = 200
+barrierHealth = 100
 gravity = 6
 bombRadius = 4
 
@@ -98,3 +98,12 @@ large = 75
 
 #CLOCK
 FPS = 50
+
+def limit(minval,currval,maxval):
+    if currval < minval:
+        currval = minval
+    elif currval > maxval:
+        currval = maxval
+
+    return currval
+        

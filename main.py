@@ -131,6 +131,7 @@ def playerproperties():
         if pos == totalplayers-1:
             resp = "main"
         pos += 1
+        modebutt.active = False
         
         
 
@@ -146,6 +147,7 @@ def playerproperties():
         rad = Radio(x,y,color_buttons,main_color=pg.Color(color),command = setplayercolor,active = color=='green')
         color_buttons.append(rad)
         x += 50
+        
     modebutt = Radio(int(dWidth/2+180),int(dHeight/2),main_color = white,command = setplayermode,active = False,checkbox = True)
     
     inputbox = TextBox((dWidth/2-150,dHeight/2-30,300,60),command = setplayername)
@@ -266,7 +268,7 @@ def gameLoop():
                     objects.remove(obj)
 
                 
-
+        
                 
         draw_objects(players[turn])
         
@@ -414,7 +416,7 @@ def fire(player):
     while fire:
         check_events()
         screen.blit(images['bg']['main'],images['bg']['main'].get_rect())
-        weapon = Missile(bombR,20,color=blue)
+        weapon = Missile(bombR,40,color=blue)
         weapon.draw(int(pos[0]),int(pos[1]))
         draw_objects(player)
         
@@ -441,12 +443,12 @@ def fire(player):
 
     if weapon.exploded:
         for tank in players:
-            damage = setdamage(weapon.rect.center,tank)*100
+            damage = setdamage(weapon,tank)*100
             score = score + damage if tank != player else score - damage
         player.score += score
 
         for obj in objects[:-1]:
-            setdamage(weapon.rect.center,obj)
+            setdamage(weapon,obj)
     
 def collided(sprite,target):
     collide = False
@@ -456,9 +458,15 @@ def collided(sprite,target):
 
     return collide
 
-def setdamage(center,target):
+def setdamage(weap,target):
+    center = weap.rect.center
     center2 = target.rect.center
-    damage = 55 - ((center[0] - center2[0])**2 + (center[1] - center2[1])**2)**(1/2) * 0.7
+    if collided(weap,target):
+        damage = weap.strength
+
+    else:
+        damage = weap.strength - ((center[0] - center2[0])**2 + (center[1] - center2[1])**2)**(1/2) * 0.7
+
     if damage < 0:
         damage = 0
 

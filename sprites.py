@@ -174,19 +174,20 @@ class Tank(Object):
         else:
             self.moveX = 0
         
-            
+           
         self.health -= self.damage
         self.damage = 0
-        if self.power > maxPower:
-            self.power = maxPower
-        elif self.power <= 0:
-            self.power = 1
+        
+        self.midX = int(limit(0+tankWidth/2,self.midX,dWidth-tankWidth/2)) 
+        self.power = limit(1,self.power,maxPower)
+
     
     def draw_tank(self):
         #Drawing Tank
         self.turEnd = self.getTurEnd()
+    
         x = int(self.midX)
-        y= int(self.midY)
+        y = int(self.midY)
         pg.draw.circle(self.screen, self.color,(x,y), int(tankHeight/2))
         self.rect = pg.draw.rect(self.screen, self.color, (x-tankWidth/2,y,tankWidth, tankHeight))
         pg.draw.line(self.screen, black, (x,y),self.turEnd,turretWidth)
