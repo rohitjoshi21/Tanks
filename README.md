@@ -1,6 +1,6 @@
 # Tanks
 
-It is a battle of tanks.
+It is a battle of tanks. I have tried to make this game for learning purpose and the idea behind this game is not mine. I have just written the codes of this game.
 
 -----
 
